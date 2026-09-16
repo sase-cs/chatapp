@@ -1,4 +1,4 @@
-// CronJob is used to keep the server alive by sending get requests every 14 minutes( necessary for the free hosting used for this project - render.com)
+// CronJob is used to keep the server alive by sending GET requests every 14 minutes( necessary for the free hosting used for this project - render.com)
 import { CronJob } from "cron";
 import http from "node:http";
 import https from "node:https";
