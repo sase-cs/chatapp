@@ -114,7 +114,9 @@ export async function sendMessage(req, res) {
     });
 
     await newMessage.save();
+
     // todo: realtime with socketio
+
     res.status(201).json(newMessage); // 201 - resource created
   } catch (err) {
     console.error("Error in sendMessage:", err.message);
