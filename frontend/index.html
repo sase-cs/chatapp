@@ -4,7 +4,32 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <meta name="description" content="Threadline — real-time chat with threads, friends and themes." />
+    <title>Threadline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Paint in the saved theme before React loads, so there is no light flash in dark mode.
+      (function () {
+        var prefs = {};
+        try {
+          prefs = JSON.parse(localStorage.getItem("appearance") || "{}");
+        } catch (e) {}
+        var mode = prefs.colorMode || "system";
+        if (mode === "system") {
+          mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        var root = document.documentElement;
+        root.dataset.theme = mode;
+        root.dataset.themePreset = prefs.accent || "default";
+        root.dataset.bubbles = prefs.bubbleStyle || "gradient";
+        root.style.colorScheme = mode;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
