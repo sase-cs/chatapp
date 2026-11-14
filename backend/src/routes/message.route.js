@@ -1,20 +1,24 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware.js";
-import { getUsersForSidebar } from "../controllers/message.controller.js";
-import { getConversationsForSidebar } from "../controllers/message.controller.js";
-import { getMessages } from "../controllers/message.controller.js";
 import { upload } from "../middleware/upload.middleware.js";
-import { sendMessage } from "../controllers/message.controller.js";
+import {
+  getConversationsForSidebar,
+  getMessages,
+  getThread,
+  markConversationSeen,
+  sendMessage,
+} from "../controllers/message.controller.js";
 
 const router = express.Router();
 
 //we use it each time
 router.use(protectRoute);
 
-//api/messages/users
-router.get("/users", getUsersForSidebar);
+// static paths first, so "conversations" or "thread" are never read as a user id
 router.get("/conversations", getConversationsForSidebar);
+router.get("/thread/:messageId", getThread);
 router.get("/:id", getMessages);
-router.post("/send/:id", upload.single("media"), sendMessage); // we use single for sending only one file each time, come back to update
+router.patch("/:id/seen", markConversationSeen);
+router.post("/send/:id", upload.single("media"), sendMessage); // one attachment per message
 // !!! IMPORTANT : whatever sent from frontend, we use the key "media"
 export default router;

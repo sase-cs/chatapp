@@ -1,0 +1,179 @@
+/* ---------- Message bubbles ---------- */
+
+.bubble {
+  --r: 20px; /* outer corner radius */
+  --r-tight: 6px; /* corner next to another bubble from the same sender */
+  border-radius: var(--r);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+/* a variable (not a descendant selector) so the nearest data-bubbles wins,
+   which lets the settings page preview both styles side by side */
+[data-bubbles="gradient"] {
+  --bubble-out-bg: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--accent) 82%, white 18%),
+    var(--accent) 70%
+  );
+}
+
+[data-bubbles="solid"] {
+  --bubble-out-bg: var(--accent);
+}
+
+.bubble-out {
+  background: var(--bubble-out-bg, var(--accent));
+  color: var(--accent-foreground);
+}
+
+.bubble-in {
+  background: var(--bubble-in);
+  color: var(--bubble-in-foreground);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+
+/* grouped bubbles: square off the corners that touch the neighbour, like iMessage */
+.bubble-out[data-pos="first"] {
+  border-bottom-right-radius: var(--r-tight);
+}
+.bubble-out[data-pos="middle"] {
+  border-top-right-radius: var(--r-tight);
+  border-bottom-right-radius: var(--r-tight);
+}
+.bubble-out[data-pos="last"] {
+  border-top-right-radius: var(--r-tight);
+}
+.bubble-in[data-pos="first"] {
+  border-bottom-left-radius: var(--r-tight);
+}
+.bubble-in[data-pos="middle"] {
+  border-top-left-radius: var(--r-tight);
+  border-bottom-left-radius: var(--r-tight);
+}
+.bubble-in[data-pos="last"] {
+  border-top-left-radius: var(--r-tight);
+}
+
+/* media-only bubbles have no padding, so the image takes the bubble's shape */
+.bubble-media {
+  background: transparent !important;
+  box-shadow: none;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* highlight every bubble in a thread while one of them is hovered */
+.bubble[data-thread-active="true"] {
+  outline: 2px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* ---------- Chat backgrounds ----------
+   Drawn with the accent color, so they follow the chosen theme. */
+
+.chat-bg {
+  --bg-tint: color-mix(in oklab, var(--accent) 16%, transparent);
+  --bg-ink: color-mix(in oklab, var(--foreground) 9%, transparent);
+  background-color: var(--background);
+}
+
+[data-theme="dark"] .chat-bg {
+  --bg-tint: color-mix(in oklab, var(--accent) 22%, transparent);
+  --bg-ink: color-mix(in oklab, var(--foreground) 7%, transparent);
+}
+
+.chat-bg-aurora {
+  background-image:
+    radial-gradient(60% 50% at 0% 0%, var(--bg-tint), transparent 70%),
+    radial-gradient(50% 45% at 100% 100%, var(--bg-tint), transparent 70%),
+    radial-gradient(
+      40% 35% at 85% 10%,
+      color-mix(in oklab, var(--accent) 8%, transparent),
+      transparent 70%
+    );
+}
+
+.chat-bg-dusk {
+  background-image: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--accent) 14%, var(--background)) 0%,
+    var(--background) 55%,
+    color-mix(in oklab, var(--accent) 8%, var(--background)) 100%
+  );
+}
+
+.chat-bg-dots {
+  background-image: radial-gradient(var(--bg-ink) 1.2px, transparent 1.4px);
+  background-size: 18px 18px;
+}
+
+.chat-bg-grid {
+  background-image:
+    linear-gradient(var(--bg-ink) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-ink) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.chat-bg-waves {
+  background-image:
+    radial-gradient(70% 40% at 50% 0%, var(--bg-tint), transparent 70%),
+    repeating-radial-gradient(
+      circle at 0 100%,
+      transparent 0 22px,
+      var(--bg-ink) 22px 23px
+    );
+}
+
+.chat-bg-confetti {
+  background-image:
+    radial-gradient(circle at 20% 30%, var(--bg-tint) 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 60%, var(--bg-ink) 0 2px, transparent 3px),
+    radial-gradient(circle at 40% 80%, var(--bg-tint) 0 2px, transparent 3px),
+    radial-gradient(circle at 85% 20%, var(--bg-ink) 0 3px, transparent 4px);
+  background-size: 90px 90px;
+}
+
+.chat-bg-custom {
+  background-size: cover;
+  background-position: center;
+}
+
+/* ---------- Small animations ---------- */
+
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  animation: typing-dot 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes recording-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.recording-pulse {
+  animation: recording-pulse 1.2s infinite;
+}

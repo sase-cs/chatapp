@@ -1,7 +1,6 @@
-//const express = require('express');
 import express from "express"; //syntax from "module" type in package.json
 import "dotenv/config";
-import User from "./models/user.model.js";
+import multer from "multer";
 import { connectDB } from "./lib/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import cors from "cors";
@@ -11,6 +10,8 @@ import job from "./lib/cron.js";
 import clerkWebhook from "./webhooks/clerk.webhook.js";
 import authRoutes from "./routes/auth.route.js";
 import messageRoutes from "./routes/message.route.js";
+import friendRoutes from "./routes/friend.route.js";
+import userRoutes from "./routes/user.route.js";
 import { app, server } from "./lib/socket.js";
 
 const PORT = process.env.PORT;
@@ -35,14 +36,32 @@ app.get("/health", (req, res) => {
 
 app.use("/api/auth", authRoutes); // authRoutes is imported from auth.route.js
 app.use("/api/messages", messageRoutes);
+app.use("/api/friends", friendRoutes);
+app.use("/api/users", userRoutes);
 
 // only for prod build
 if (fs.existsSync(publicDir)) {
   app.use(express.static(publicDir)); //middleware to serve static files from public folder
-  app.get("/{*any}", (req, res) => {
-    res.sendFile(path.join(publicDir, "index.html"), (err) => next(err)); //lets react handle rerouting in the browser
+  app.get("/{*any}", (req, res, next) => {
+    res.sendFile(path.join(publicDir, "index.html"), (err) => {
+      if (err) next(err);
+    }); //lets react handle rerouting in the browser
   });
 }
+
+// errors thrown by multer (file too large, wrong type) and anything else that slips through
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    const status = err.code === "LIMIT_FILE_SIZE" ? 413 : 400;
+    const message =
+      err.code === "LIMIT_FILE_SIZE" ? "Files can be up to 25 MB" : err.message;
+    return res.status(status).json({ message });
+  }
+  console.error("Unhandled error:", err);
+  res
+    .status(err.status || 500)
+    .json({ message: err.status ? err.message : "Internal server error" });
+});
 
 server.listen(PORT, () => {
   connectDB();
