@@ -89,7 +89,7 @@ export async function getMessages(req, res) {
 export async function sendMessage(req, res) {
   try {
     const { text } = req.body;
-    const { id: receiverId } = req.params;
+    const { id: receiverId } = req.params; // contains: the id of the user to whom the message is being sent
     const senderId = req.user._id;
 
     let imageUrl;
@@ -115,7 +115,11 @@ export async function sendMessage(req, res) {
 
     await newMessage.save();
 
-    // todo: realtime with socketio
+    const receiverSocketId = getRecieverSocketId(receiverId);
+    //only send the message in realtime if user is online
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(201).json(newMessage); // 201 - resource created
   } catch (err) {

@@ -13,7 +13,7 @@ function getRecieverSocketId(userId) {
   return userSocketMap[userId];
 }
 
-// { userId: socketId} as in key : value
+// { userId: socketId } ->online users map
 const userSocketMap = {};
 
 io.on("connection", (socket) => {
@@ -26,6 +26,7 @@ io.on("connection", (socket) => {
   // broadcast to everyone
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+  // .on used to listen for events
   socket.on("disconnect", () => {
     if (userId) {
       delete userSocketMap[userId];
@@ -33,3 +34,5 @@ io.on("connection", (socket) => {
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
+
+export { app, server, io, getRecieverSocketId };
