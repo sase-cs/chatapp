@@ -1,6 +1,12 @@
 import ImageKit, { toFile } from "@imagekit/nodejs";
 
-const imagekit = new ImageKit({ privateKey: process.env.IMAGEKIT_PRIVATE_KEY });
+// Created on first upload: the SDK throws when the key is missing, and doing that at import
+// time would crash the whole server instead of just failing uploads.
+let imagekit = null;
+function getClient() {
+  imagekit ??= new ImageKit({ privateKey: process.env.IMAGEKIT_PRIVATE_KEY });
+  return imagekit;
+}
 
 // helper function to check if imagekit key exists
 function hasImageKitConfig() {
@@ -20,7 +26,7 @@ function createFileName(originalName = "upload") {
 
 async function uploadChatMedia(file) {
   const fileName = createFileName(file.originalname);
-  const result = await imagekit.files.upload({
+  const result = await getClient().files.upload({
     file: await toFile(file.buffer, fileName, { type: file.mimetype }), // convert buffer to file
     fileName,
     folder: "/chat",
